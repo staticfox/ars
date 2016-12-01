@@ -9,7 +9,7 @@ class IRCManager:
     def __init__(self, bot):
         self.bot = bot
         self.config = bot.config
-        self.ident = "bot"
+        self.ident = self.config['irc']['ident']
         self.botnick = self.config['irc']['nick']
         self.real = self.config['irc']['realname']
         self.server = self.config['irc']['server']
