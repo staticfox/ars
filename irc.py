@@ -207,6 +207,7 @@ class IRCManager:
                     if 'JOIN' in nick or ' ' in nick: return
                     chan = m.split()[2].lower()
                     if ' ' in chan: return
+                    if nick == self.botnick: return
                     join_message = "[IRC] *** {} has joined".format(nick)
                     if 'airraidsirens' in chan:
                         await self.bot.isend(self.config['channels']['ars_general'], join_message)
