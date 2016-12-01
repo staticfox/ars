@@ -1,5 +1,4 @@
 import asyncio
-import base64
 import pymysql.cursors
 import traceback
 import xml.etree
