@@ -186,7 +186,7 @@ class IRCManager:
                 if '#' in st2a[2] and st2a[1] == "PRIVMSG":
                     nick = m.split('!')[0][1:]
                     channel = m.split(' PRIVMSG ')[-1].split(' :')[0]
-                    message = m.split(':')[2]
+                    message = m.split(':', 2)[2]
                     m2a = message.split(' ')
                     if nick.lower() not in self.config['irc']['ignore_nicks']:
                         await self.onprivmsg(nick, channel, message)
