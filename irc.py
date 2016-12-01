@@ -172,18 +172,18 @@ class IRCManager:
             tokens = len(st2a)
 
             if tokens > 1:
-                if str(st2a[0]) == "ERROR" and str(st2a[1]) == ":Closing":
+                if st2a[0] == "ERROR" and st2a[1] == ":Closing":
                     self.dc_callback()
                     break
 
-                if str(st2a[0]) == "PING":
-                    self.sendbuf.append('PONG %s\n' % (str(st2a[1]).strip(':')))
+                if st2a[0] == "PING":
+                    self.sendbuf.append('PONG %s\n' % (st2a[1].strip(':')))
 
-                if str(st2a[1]) == "001":
+                if st2a[1] == "001":
                     self.idandjoin()
 
             if tokens > 3:
-                if '#' in st2a[2] and str(st2a[1]) == "PRIVMSG":
+                if '#' in st2a[2] and st2a[1] == "PRIVMSG":
                     nick = m.split('!')[0][1:]
                     channel = m.split(' PRIVMSG ')[-1].split(' :')[0]
                     message = m.split(':')[2]
@@ -192,17 +192,17 @@ class IRCManager:
                         await self.onprivmsg(nick, channel, message)
 
             if tokens > 2:
-                if not self.ischecked and str(st2a[1]) == "513" and str(st2a[2]) == str(botnick):
+                if not self.ischecked and st2a[1] == "513" and st2a[2] == str(botnick):
                     self.sendbuf.append('PONG %s %s\n' % (botnick, st2a[8].strip(':')))
                     self.ischecked = True
 
-                if 'NICK' == str(st2a[1]):
+                if 'NICK' == st2a[1]:
                     nick = m.split('!')[0][1:]
                     newnick = m.split()[2][1:]
                     nick_message = "[IRC] *** {} changes nickname to {}".format(nick, newnick)
                     await self.irc_both(nick_message)
 
-                if 'JOIN' == str(st2a[1]):
+                if 'JOIN' == st2a[1]:
                     nick = m.split('!')[0][1:]
                     if 'JOIN' in nick or ' ' in nick: return
                     chan = m.split()[2].lower()
@@ -213,7 +213,7 @@ class IRCManager:
                     elif 'mapping' in chan:
                         await self.bot.isend(self.config['channels']['ars_mapping'], join_message)
 
-                if 'PART' == str(st2a[1]):
+                if 'PART' == st2a[1]:
                     nick = m.split('!')[0][1:]
                     if 'PART' in nick or ' ' in nick: return
                     chan = m.split()[2].lower()
