@@ -1,0 +1,44 @@
+discord:
+  key: ""
+
+forum_mysql:
+  host: ""
+  user: ""
+  pass: ""
+  db: ""
+
+wiki_mysql:
+  host: ""
+  user: ""
+  pass: ""
+  db: ""
+
+forums:
+  check_rate: 1
+
+irc:
+  server: ""
+  port: 6667
+  ident: ""
+  nick: Discord
+  realname: Discord Bot Integration
+  channels:
+    - "#airraidsirens"
+    - "#mapping"
+  ignore_nicks:
+    - "chanserv"
+    - "thunderserv"
+  account: ARS
+  password: ""
+  nickserv: "NickServ"
+  relaychannel: "#airraidsirens"
+  mappingchannel: "#mapping"
+
+channels:
+  ars_debug: ''
+  ars_forums: ''
+  ars_wiki: ''
+  ars_general: ''
+  ars_mapping: ''
+  ars_wiki_staff: ''
+  ars_forum_staff: ''

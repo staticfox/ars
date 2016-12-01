@@ -1,0 +1,4 @@
+configparser==3.5.0
+discord.py==0.15.0
+PyMySQL==0.7.6
+PyYAML==3.11

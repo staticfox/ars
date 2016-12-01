@@ -1,0 +1,4 @@
+config.yml
+db/*
+!db/.keep
+__pycache__/
