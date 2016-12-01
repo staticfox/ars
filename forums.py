@@ -86,7 +86,6 @@ class Forum:
                 if length > len(post_text):
                     post_text += "..."
 
-                print(replynum)
                 replymsg = "New topic!"
                 if replynum > 0:
                     replymsg = "New reply!"
