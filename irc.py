@@ -238,3 +238,8 @@ class IRCManager:
                         await self.bot.isend(self.config['channels']['ars_general'], part_message)
                     elif 'mapping' in chan:
                         await self.bot.isend(self.config['channels']['ars_mapping'], part_message)
+
+                if 'QUIT' == st2a[1]:
+                    nick = m.split('!')[0][1:]
+                    quit_message = "[IRC] *** {} has quit".format(nick)
+                    await self.irc_both(quit_message)
