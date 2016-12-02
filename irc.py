@@ -65,6 +65,15 @@ class IRCManager:
             print("socksend: {}".format(e))
             pass
 
+    def decode_irc_string(self, string):
+        try:
+            return string.decode('UTF-8')
+        except UnicodeDecodeError:
+            try:
+                return string.decode('iso-8859-1')
+            except UnicodeDecodeError:
+                return string.decode('ascii', 'ignore')
+
     async def relay_discord_general(self, message):
         m = "[DISCORD] <{}> {}".format(message.author.name, message.content)
         self.privmsg(self.irc_general_relay, m)
@@ -149,10 +158,10 @@ class IRCManager:
 
         self.buffer += ircmsg
         if self.length is None:
-            if '\n' not in self.buffer.decode('utf-8'):
+            if '\n' not in self.decode_irc_string(self.buffer):
                 return
 
-            sp = self.buffer.decode('utf-8').split('\n')
+            sp = self.decode_irc_string(self.buffer).split('\n')
             i = 0
             lens = len(sp)
             for line in sp:
@@ -164,7 +173,7 @@ class IRCManager:
                 if i + 1 == sp[i+1] != '':
                     return
 
-        for mm in msg.decode('utf-8').split('\n'):
+        for mm in self.decode_irc_string(msg).split('\n'):
 
             m = mm.strip('\n\r')
 
