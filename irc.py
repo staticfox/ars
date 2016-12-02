@@ -23,7 +23,6 @@ class IRCManager:
         self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ircsock.settimeout(0)
         self.ischecked = False
-        self.running = True
         self.buffer = b''
         self.length = None
         self.readready = False
@@ -52,10 +51,12 @@ class IRCManager:
         if self.ircaccount and self.authserv:
             self.privmsg(self.authserv, "LOGIN {} {}".format(self.ircaccount, self.ircpass))
 
-    def dc_callback(self):
-        self.running = False
+    async def dc_callback(self):
+        self.ircsock.close()
         time.sleep(10)
-        self.connect()
+        self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.ircsock.settimeout(0)
+        asyncio.ensure_future(self.loop())
 
     def socksend(self, data):
         d = data.encode('utf-8')
@@ -113,6 +114,10 @@ class IRCManager:
 
     async def loop(self):
         await self.bot.discord.wait_until_ready()
+        self.readready = False
+        self.writeready = False
+        self.buffer = b''
+        self.length = None
         while not await self.connect():
             await self.connect()
             await asyncio.sleep(.1)
@@ -182,7 +187,7 @@ class IRCManager:
 
             if tokens > 1:
                 if st2a[0] == "ERROR" and st2a[1] == ":Closing":
-                    self.dc_callback()
+                    await self.dc_callback()
                     break
 
                 if st2a[0] == "PING":
