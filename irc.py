@@ -180,7 +180,7 @@ class IRCManager:
 
         for mm in self.decode_irc_string(msg).split('\n'):
 
-            m = mm.strip('\n\r')
+            m = mm.strip('\n')
 
             st2a = m.split(' ')
             tokens = len(st2a)
