@@ -241,5 +241,6 @@ class IRCManager:
 
                 if 'QUIT' == st2a[1]:
                     nick = m.split('!')[0][1:]
+                    if nick == self.botnick: return
                     quit_message = "[IRC] *** {} has quit".format(nick)
                     await self.irc_both(quit_message)
