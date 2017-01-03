@@ -83,7 +83,8 @@ class Wiki:
                 # Decode
                 title = title.decode('utf-8')
                 comment = comment.decode('utf-8')
-                log_type= log_type.decode('utf-8')
+                if log_type:
+                    log_type = log_type.decode('utf-8')
                 text = remove_tags(text.decode('utf-8'))
                 length = len(text)
                 if length > 50:
