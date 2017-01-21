@@ -1,6 +1,6 @@
 import asyncio
 import base64
-import pymysql.cursors
+import psycopg2
 import traceback
 import xml.etree
 import html
@@ -35,13 +35,11 @@ class Forum:
 
     def connectDb(self):
         try:
-            self.forumdb = pymysql.connect(
-                host=self.config['forum_mysql']['host'],
+            self.forumdb = psycopg2.connect(
                 user=self.config['forum_mysql']['user'],
-                password=self.config['forum_mysql']['pass'],
-                database=self.config['forum_mysql']['db'])
-        except pymysql.err.OperationalError as ex:
-            print("Error connecting to MySQL: {}".format(ex))
+                dbname=self.config['forum_mysql']['db'])
+        except Exception as ex:
+            print("Error connecting to PostgreSQL: {}".format(ex))
 
     async def fetch_post(self):
         try:
@@ -56,7 +54,7 @@ class Forum:
                          phpbb3_posts.post_text AS post_text_trimmed,
                          (SELECT COUNT(*) FROM phpbb3_posts WHERE phpbb3_posts.topic_id = (SELECT topic_id FROM phpbb3_posts ORDER BY post_id DESC LIMIT 1)) AS post_reply_number,
                          phpbb3_posts.post_id AS number_id,
-                         IFNULL(phpbb3_ranks.rank_title, 'Registered User') AS group_title
+                         COALESCE(phpbb3_ranks.rank_title, 'Registered User') AS group_title
                          FROM phpbb3_posts
                          INNER JOIN phpbb3_users ON phpbb3_posts.poster_id = phpbb3_users.user_id
                          INNER JOIN phpbb3_forums ON phpbb3_forums.forum_id = phpbb3_posts.forum_id
