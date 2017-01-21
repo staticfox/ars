@@ -2,3 +2,4 @@ config.yml
 db/*
 !db/.keep
 __pycache__/
+.venv/
