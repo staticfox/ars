@@ -275,7 +275,7 @@ class DCManager:
         dt = dateparser.parse(ban_time)
 
         if not dt:
-            await self.bot.isend(origin, 'Unable to parse time')
+            await self.bot.isend(origin.id, 'Unable to parse time')
             return
 
         future = int(abs(time.mktime(dt.timetuple())))
@@ -287,7 +287,7 @@ class DCManager:
         seconds = epoch - future
 
         if seconds <= 0:
-            await self.bot.isend(origin, 'Unable to parse time (underflow)')
+            await self.bot.isend(origin.id, 'Unable to parse time (underflow)')
             return
 
         new_message = ""
@@ -312,11 +312,11 @@ class DCManager:
                 target_nodes.append(member)
 
         if len(target_nodes) < 1:
-            await self.bot.isend(origin, 'Unable to find user {}'.format(target))
+            await self.bot.isend(origin.id, 'Unable to find user {}'.format(target))
             return
 
         if len(target_nodes) > 1:
-            await self.bot.isend(origin, 'Found multiple users for user {}, {}'.format(
+            await self.bot.isend(origin.id, 'Found multiple users for user {}, {}'.format(
                 target, [node.display_name for node in target_nodes]
             ))
             return
@@ -346,7 +346,7 @@ class DCManager:
 
         await self.move_to_timeout_voice(server, target_node)
 
-        await self.bot.isend(origin, 'Banned {}.'.format(target_node.display_name))
+        await self.bot.isend(origin.id, 'Banned {}.'.format(target_node.display_name))
         await self.bot.isend(self.config['channels']['dc_mod_logs'], log_message)
 
 
