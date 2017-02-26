@@ -107,7 +107,7 @@ class DCManager:
             await asyncio.sleep(3)
 
 
-    async def do_shadow_ban(self, server, target, reason):
+    async def do_shadow_ban(self, server, target, reason, want_message=True):
         shadowban_role = None
         for role in server.roles:
             if 'shadow' in role.name.lower():
@@ -127,10 +127,12 @@ class DCManager:
                 continue
 
         await self.discord.add_roles(target, shadowban_role)
-        await self.discord.send_message(target, reason)
+
+        if want_message:
+            await self.discord.send_message(target, reason)
 
 
-    async def do_timeout(self, server, target, reason):
+    async def do_timeout(self, server, target, reason, want_message=True):
         timeout_role = None
         for role in server.roles:
             if 'timeout' in role.name.lower():
@@ -150,7 +152,9 @@ class DCManager:
                 continue
 
         await self.discord.add_roles(target, timeout_role)
-        await self.discord.send_message(target, reason)
+
+        if want_message:
+            await self.discord.send_message(target, reason)
 
 
     async def move_to_timeout_voice(self, server, target):
@@ -169,6 +173,28 @@ class DCManager:
                 await self.bot.debug_notify("Moving {} to {}".format(target.display_name, banned_channel.name))
                 await self.discord.move_member(target, banned_channel)
 
+
+    async def is_join_ban(self, member):
+        c = self.conn.cursor()
+        c.execute('''
+            SELECT ban_type FROM bans WHERE target_id = {}
+        '''.format(member.id))
+        rows = c.fetchall()
+
+        if len(rows) == 0:
+            return False
+
+        ban_type = rows[0][0]
+
+        if 'shadow' in str(ban_type).lower():
+            await self.do_shadow_ban(member.server, member, None, False)
+        else:
+            await self.do_timeout(member.server, member, None, False)
+
+        await self.bot.isend(self.config['channels']['dc_mod_logs'],
+            '[ban] Re-banned {} for attempted ban evasion.'.format(member.display_name))
+
+        return True
 
     async def parse_unban(self, origin, ban_id):
         try:

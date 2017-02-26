@@ -33,12 +33,14 @@ class Bot:
     async def on_message(self, message):
         await self.dcmanager.on_message(message)
         await self.random.on_message(message)
+
         asyncio.ensure_future(self.ircmanager.on_message(message))
 
     async def on_member_join(self, member):
         server = member.server
-        fmt = 'Welcome {0.mention} to {1.name}! Here is a quick guide on getting started https://goo.gl/QhfUkQ'
-        await self.isend(self.config['channels']['ars_general'], fmt.format(member, server))
+        if not await self.dcmanager.is_join_ban(member):
+            fmt = 'Welcome {0.mention} to {1.name}! Here is a quick guide on getting started https://goo.gl/QhfUkQ'
+            await self.isend(self.config['channels']['ars_general'], fmt.format(member, server))
 
     def check_config(self):
         try:
