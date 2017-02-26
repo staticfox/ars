@@ -87,6 +87,14 @@ class Bot:
                 print("Error sending via alert_error: {}".format(ex))
         print("An error has occured: {}".format(e))
 
+    async def debug_notify(self, e):
+        if not self.discord.is_closed:
+            channel = self.get_channel('ars_debug')
+            try:
+                await self.discord.send_message(channel, "DEBUG: {}".format(e))
+            except discord.errors.InvalidArgument as ex:
+                print("Error sending via debug_notify: {}".format(ex))
+
 def main():
     bot = Bot()
     key = bot.config['discord']['key']
@@ -95,6 +103,7 @@ def main():
         bot.discord.loop.create_task(bot.forumdb.check())
         bot.discord.loop.create_task(bot.wikidb.check())
         bot.discord.loop.create_task(bot.ircmanager.loop())
+        bot.discord.loop.create_task(bot.dcmanager.loop())
         bot.discord.run(key)
     except discord.errors.LoginFailure:
         print("Invalid token specified: %s" % (key))

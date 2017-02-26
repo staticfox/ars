@@ -3,3 +3,4 @@ discord.py==0.15.0
 PyMySQL==0.7.6
 PyYAML==3.11
 psycopg2==2.6.2
+dateparser==0.5.1
