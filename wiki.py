@@ -109,7 +109,10 @@ class Wiki:
                     if minor == 1:
                         s += "[minor] "
 
-                    dif = ("%+d" % (new_len - old_len))
+                    if new_len and old_len:
+                        dif = ("%+d" % (new_len - old_len))
+                    else:
+                        dif = ''
                     s += "{text} {modifier} page {title} ({dif}): {comment}".format(**locals())
 
 
