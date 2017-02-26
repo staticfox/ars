@@ -346,6 +346,7 @@ class DCManager:
 
         await self.move_to_timeout_voice(server, target_node)
 
+        await self.bot.isend(origin, 'Banned {}.'.format(target_node.display_name))
         await self.bot.isend(self.config['channels']['dc_mod_logs'], log_message)
 
 
