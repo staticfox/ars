@@ -1,5 +1,6 @@
 from discord import PrivateChannel
 import asyncio
+import re
 import time
 import select
 import socket
@@ -9,6 +10,7 @@ class IRCManager:
     def __init__(self, bot):
         self.bot = bot
         self.config = bot.config
+        self.discord = self.bot.discord
         self.ident = self.config['irc']['ident']
         self.botnick = self.config['irc']['nick']
         self.real = self.config['irc']['realname']
@@ -75,12 +77,12 @@ class IRCManager:
             except UnicodeDecodeError:
                 return string.decode('ascii', 'ignore')
 
-    async def relay_discord_general(self, message):
-        m = "[DISCORD] <{}> {}".format(message.author.name, message.content)
+    async def relay_discord_general(self, content, message):
+        m = "<{}> {}".format(message.author.name, content)
         self.privmsg(self.irc_general_relay, m)
 
-    async def relay_discord_mapping(self, message):
-        m = "[DISCORD] <{}> {}".format(message.author.name, message.content)
+    async def relay_discord_mapping(self, content, message):
+        m = "<{}> {}".format(message.author.name, content)
         self.privmsg(self.irc_mapping_relay, m)
 
     async def on_message(self, message):
@@ -90,10 +92,26 @@ class IRCManager:
         if isinstance(message.channel, PrivateChannel):
             return
 
+        new_message = str(message.content)
+
+        regex = re.compile("<@!(.+?)>")
+        matches = regex.findall(new_message)
+
+        def name_from_id(member_id):
+            for server in self.discord.servers:
+                for member in server.members:
+                    if member_id == str(member.id):
+                        return "@{}".format(member.display_name)
+            return '@Unknown'
+
+        for match in matches:
+            new_name = name_from_id(match)
+            new_message = re.sub(regex, new_name, new_message, 1)
+
         if message.channel.name == 'general':
-            await self.relay_discord_general(message)
+            await self.relay_discord_general(new_message, message)
         elif message.channel.name == 'mapping':
-            await self.relay_discord_mapping(message)
+            await self.relay_discord_mapping(new_message, message)
 
     async def connect(self):
         self.ischecked = False
