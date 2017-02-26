@@ -208,23 +208,35 @@ class DCManager:
             return
 
         c = self.conn.cursor()
-        c.execute('''
-            SELECT
-            server_id, target_id, target_name, banner_id,
-            banner_name, reason, expires, ban_type
-            FROM bans WHERE ban_id = {}
-        '''.format(ban_int))
+        if ban_int < 10000000000000:
+            c.execute('''
+                SELECT
+                server_id, target_id, target_name, banner_id,
+                banner_name, reason, expires, ban_type
+                FROM bans WHERE ban_id = {}
+            '''.format(ban_int))
+        else:
+            c.execute('''
+                SELECT
+                server_id, target_id, target_name, banner_id,
+                banner_name, reason, expires, ban_type
+                FROM bans WHERE target_id = {}
+            '''.format(ban_int))
         rows = c.fetchall()
 
         if len(rows) == 0:
-            await self.bot.isend(origin, 'Ban ID {} not found'.format(ban_int))
+            await self.bot.isend(origin, 'Ban {} not found'.format(ban_int))
             return
 
         for row in rows:
             await self.bot.isend(origin, 'Unbanning {}...'.format(row[2]))
             await self.unban(row[0], row[1], row[2], row[3], row[4], row[5], row[7], 'removing')
 
-        c.execute('''DELETE FROM bans WHERE ban_id = {}'''.format(ban_int))
+        if ban_int < 10000000000000:
+            c.execute('''DELETE FROM bans WHERE ban_id = {}'''.format(ban_int))
+        else:
+            c.execute('''DELETE FROM bans WHERE target_id = {}'''.format(ban_int))
+
         self.conn.commit()
 
 
